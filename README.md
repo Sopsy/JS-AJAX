@@ -1,7 +1,7 @@
 # Ajax
 Ajax requests and forms.
 
-## Usage
+## Basic usage
 ```
 const ajax = new Ajax({
     data: null,
@@ -32,6 +32,36 @@ HTML:
 
 // This binds automatically to all ajax-forms as it catches the `submit` event on `document`.
 new AjaxForm(ajax);
+```
+
+## File uploads
+```
+const ajax = new Ajax();
+const fileUpload = new FileUpload(ajax, <selectFileButton>);
+await fileUpload.extractThumbnail(<fileInput>.files[0]);
+    
+if (fileUpload.thumbnail() !== null) {
+    let canvas = document.createElement('canvas');
+    canvas.width = fileUpload.thumbnail().width;
+    canvas.height = fileUpload.thumbnail().height;
+    let ctx = canvas.getContext('2d');
+    ctx.drawImage(fileUpload.thumbnail(), 0, 0);
+    document.body.append(canvas);
+    
+}
+
+<selectFileButton>.addEventListener('upload-progress', (e) => {
+    <selectFileButton>.style.setProperty('--progress', 100 - e.detail.percentage + '%');
+});
+
+let response = null;
+try {
+    // Expects JSON response from the API
+    response = await fileUpload.upload(fileInput.files[0], '/upload');
+} catch (e) {
+    console.error('File upload failed');
+    throw e;
+}
 ```
 
 ### Ajax config options
